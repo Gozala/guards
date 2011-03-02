@@ -1,0 +1,633 @@
+<a href="http://github.com/Gozala/guards"><img alt="Fork me on GitHub" id="ribbon" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a><html>
+	<head>
+		<title></title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<style>body {
+    margin: 0;
+    padding: 0;
+    font: 14px/1.5 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    color: #252519;
+}
+a {
+    color: #252519;
+}
+a:hover {
+    text-decoration: underline;
+    color: #19469D;
+}
+p {
+    margin: 12px 0;
+}
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+table#source {
+    width: 100%;
+    border-collapse: collapse;
+}
+table#source td:first-child {
+    padding: 30px 40px 30px 40px;
+    vertical-align: top;
+}
+table#source td:first-child,
+table#source td:first-child pre {
+    width: 450px;
+}
+table#source td:last-child {
+    padding: 30px 0 30px 40px;
+    border-left: 1px solid #E5E5EE;
+    background: #F5F5FF;
+}
+table#source tr {
+    border-bottom: 1px solid #E5E5EE;
+}
+table#source tr.filename {
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EE;
+}
+table#source tr.filename td:first-child {
+    text-transform: capitalize;
+}
+table#source tr.filename td:last-child {
+    font-size: 12px;
+}
+table#source tr.filename h2 {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+table#source tr.code h1,
+table#source tr.code h2,
+table#source tr.code h3 {
+    margin-top: 30px;
+    font-family: "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+    font-size: 18px;
+}
+table#source tr.code h2 {
+    font-size: 16px;
+}
+table#source tr.code h3 {
+    font-size: 14px;
+}
+table#source tr.code ul {
+    margin: 15px 0 15px 35px;
+    padding: 0;
+}
+table#source tr.code ul li {
+    margin: 0;
+    padding: 1px 0;
+}
+table#source tr.code ul li p {
+    margin: 0;
+    padding: 0;
+}
+table#source tr.code td:first-child pre {
+    padding: 20px;
+}
+#ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+code .string { color: #219161; }
+code .regexp { color: #219161; }
+code .keyword { color: #954121; }
+code .number { color: #19469D; }
+code .comment { color: #bbb; }
+code .this { color: #19469D; }</style>
+		<script>
+			$(function(){
+				$('tr.code').hide();
+				$('tr.filename').toggle(function(){
+					$(this).nextUntil('.filename').fadeIn();
+				}, function(){
+					$(this).nextUntil('.filename').fadeOut();
+				});
+			});
+		</script>
+	</head>
+	<body>
+<table id="source"><tbody><tr><td><h1></h1><h1>guards</h1>
+
+<p>JavaScript library for data type &amp; data structure validations providing a
+runtime analog of types. Check out <a href="https://github.com/Gozala/guards/docs">docs</a> for more details.</p>
+
+<h2>Install</h2>
+
+<pre><code>npm install guards</code></pre>
+
+<h2>Example</h2>
+
+<pre><code>var guards = require("guards");
+var Point = guards.Schema({
+  x: guards.Number(0),
+  y: guards.Number(0)
+});
+function color(value) {
+  if (typeof value === "number" &amp;&amp; value &lt;= 255 &amp;&amp; value &gt;= 0)
+    return value
+  throw new TypeError("Color is a number between 0 and 255");
+}
+var RGB = guards.Tuple([ color, color, color ]);
+var Segment = guards.Schema({
+  start: Point,
+  end: Point,
+  color: RGB,
+});
+var segment = Segment({ end: { y: 23 }, color: [17, 255, 0] })
+// { start: { x: 0, y: 0 }, end: { x: 0, y: 23 }, color: [ 17, 255, 0 ] }</code></pre>
+
+<h2>Prior art</h2>
+
+<ul><li><a href="http://wiki.ecmascript.org/doku.php?id=strawman:guards">EcmaScript Guards proposal</a></li><li><a href="https://github.com/dherman/structsjs">StructsJS</a></li></ul></td><td></td></tr><tr class="filename"><td><h2 id="lib/guards.js"><a href="#">guards</a></h2></td><td>lib/guards.js</td></tr><tr class="code">
+<td class="docs">
+<p> vim:ts=2:sts=2:sw=2:
+<strong></strong><em> BEGIN LICENSE BLOCK <strong></strong></em>
+## Version MPL 1.1/GPL 2.0/LGPL 2.1</p>
+
+<p>The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at
+http://www.mozilla.org/MPL/</p>
+
+<p>Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+for the specific language governing rights and limitations under the
+License.</p>
+
+<p>The Original Code is Jetpack.</p>
+
+<p>The Initial Developer of the Original Code is
+the Mozilla Foundation.
+Portions created by the Initial Developer are Copyright (C) 2010
+the Initial Developer. All Rights Reserved.</p>
+
+<p>Contributor(s):
+  Irakli Gozalishvili <a href="mailto:gozala@mozilla.com">gozala@mozilla.com</a> (Original Author)</p>
+
+<p>Alternatively, the contents of this file may be used under the terms of
+either the GNU General Public License Version 2 or later (the "GPL"), or
+the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+in which case the provisions of the GPL or the LGPL are applicable instead
+of those above. If you wish to allow use of your version of this file only
+under the terms of either the GPL or the LGPL, and not to allow others to
+use your version of this file under the terms of the MPL, indicate your
+decision by deleting the provisions above and replace them with the notice
+and other provisions required by the GPL or the LGPL. If you do not delete
+the provisions above, a recipient may use your version of this file under
+the terms of any one of the MPL, the GPL or the LGPL.</p>
+
+<p><strong></strong><em> END LICENSE BLOCK <strong></strong></em> </p>
+</td>
+<td class="code">
+<pre><code><span class="string">"use strict"</span>;
+
+<span class="keyword">var</span> <span class="variable">isArray</span>, <span class="variable">isFunction</span>, <span class="variable">isObject</span>, <span class="variable">isUndefined</span>, <span class="variable">isNumber</span>, <span class="variable">isString</span>, <span class="variable">utils</span>;
+<span class="variable">utils</span> = <span class="variable">require</span>(<span class="string">"./type"</span>);
+<span class="variable">isArray</span> = <span class="variable">utils</span>.<span class="variable">isArray</span>;
+<span class="variable">isFunction</span> = <span class="variable">utils</span>.<span class="variable">isFunction</span>;
+<span class="variable">isUndefined</span> = <span class="variable">utils</span>.<span class="variable">isUndefined</span>;
+<span class="variable">isNumber</span> = <span class="variable">utils</span>.<span class="variable">isNumber</span>;
+<span class="variable">isString</span> = <span class="variable">utils</span>.<span class="variable">isString</span>;
+<span class="variable">isObject</span> = <span class="variable">utils</span>.<span class="variable">isObject</span>;</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>String</h1>
+
+<p>Function creates a string guard - function that may be used to perform run
+time type checks on the values. Function takes an optional <code>defaultValue</code>
+that will be returned by a created guard if it's invoked without (or with
+<code>undefined</code>) <code>value</code> argument. The <code>defaultValue</code> will fallback to
+<code>undefined</code> if not provided. Function also takes another optional argument
+<code>message</code> that represents a template of a message of the <code>TypeError</code> that
+will be thrown by guard if it's invoked with incorrect value.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Object | String | Number | function</em>  [defaultValue]</p><p>Value that returned guard is going to fall back to if invoked without
+a <code>value</code> or if it's <code>undefined</code>.</p></li><li><p><strong>param</strong>: <em>String</em>  [message]</p><p>Optional error message template that will be a message of a <code>TypeError</code>
+that is will be thrown if returned guard is invoked with a wrong <code>value</code>
+type. If <code>message</code> contains <code>"{{value}}"</code> and <code>"{{type}}"</code> strings they
+are going to be replaced with an actual <code>value</code> and it's type.</p></li></ul>
+
+<h2>Examples</h2>
+
+<pre><code> var guards = require("guards");
+
+ var gUser = guards.String("Anonymous");
+
+ var user1 = gUser("Jack");
+ // "Jack"
+
+ var user2 = gUser();
+ // "Anonymous"
+
+ var user3 = gUser(7);
+ // TypeError: String expected instead of number `7`
+
+ var gHi = guards.String("Hi", "string expected not a {{type}}");
+
+ var msg = gHi(function() {});
+ // TypeError: string expected not a function</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">exports</span>.<span class="class">String</span> = <span class="keyword">function</span> <span class="class">String</span>(<span class="variable">defaultValue</span>, <span class="variable">message</span>) {
+  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
+  <span class="comment">// built-in one.</span>
+  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"String expected instead of {{type}} `{{value}}`"</span>;
+
+  <span class="comment">// Generating a guard function.</span>
+  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GString</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
+    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
+    <span class="comment">// falling back to the `defaultValue`.</span>
+    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
+      <span class="variable">value</span> = <span class="variable">defaultValue</span>;
+    <span class="comment">// If `value` is defined and it's not a string `TypeError` is thrown with</span>
+    <span class="comment">// a desired message.</span>
+    <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="variable">isString</span>(<span class="variable">value</span>))
+      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
+
+    <span class="comment">// If error was not thrown the `value` passed a guard successfully and it</span>
+    <span class="comment">// can be returned.</span>
+    <span class="keyword">return</span> <span class="variable">value</span>;
+  }
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>Number</h1>
+
+<p>Function creates a number guard - function that may be used to perform run
+time type checks on the values. Function takes an optional <code>defaultValue</code>
+that will be returned by a created guard if it's invoked without (or with
+<code>undefined</code>) <code>value</code> argument. The <code>defaultValue</code> will fallback to
+<code>undefined</code> if not provided. Function also takes another optional argument
+<code>message</code> that represents a template of a message of the <code>TypeError</code> that
+will be thrown by guard if it's invoked with incorrect value.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Object | String | Number | function</em>  [defaultValue]</p><p>Value that returned guard is going to fall back to if invoked without
+a <code>value</code> or if it's <code>undefined</code>.</p></li><li><p><strong>param</strong>: <em>String</em>  [message]</p><p>Optional error message template that will be a message of a <code>TypeError</code>
+that is will be thrown if returned guard is invoked with a wrong <code>value</code>
+type. If <code>message</code> contains <code>"{{value}}"</code> and <code>"{{type}}"</code> strings they
+are going to be replaced with an actual <code>value</code> and it's type.</p></li></ul>
+
+<h2>examples</h2>
+
+<pre><code> var guards = require("guards");
+ var gLength = guards.Number(0);
+
+ var length1 = gLength();
+ // 0
+
+ var length2 = gLength(17);
+ // 17
+
+ var length3 = gLength("7");
+ // TypeError: Number expected instead of string `7`
+
+ var gCount = guards.Number(0, "number expected not a {{type}}");
+
+ var count = gCount({ value: 4 });
+ // TypeError: number expected not a object</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">exports</span>.<span class="class">Number</span> = <span class="keyword">function</span> <span class="class">Number</span>(<span class="variable">defaultValue</span>, <span class="variable">message</span>) {
+  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
+  <span class="comment">// built-in one.</span>
+  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Number expected instead of {{type}} `{{value}}`"</span>;
+
+  <span class="comment">// Generating a guard function.</span>
+  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GNumber</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
+    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
+    <span class="comment">// falling back to the `defaultValue`.</span>
+    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
+      <span class="variable">value</span> = <span class="variable">defaultValue</span>;
+    <span class="comment">// If `value` is defined and it's not a number `TypeError` is thrown with</span>
+    <span class="comment">// a desired message.</span>
+    <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="variable">isNumber</span>(<span class="variable">value</span>))
+     <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
+
+    <span class="comment">// If error was not thrown the `value` passed a guard successfully and it</span>
+    <span class="comment">// can be returned.</span>
+    <span class="keyword">return</span> <span class="variable">value</span>;
+  }
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>Schema</h1>
+
+<p>Schema is useful for defining guards for data objects that have particular
+structure. Function takes <code>descriptor</code> argument that is a map of guards
+guarding same named properties of the value being validated. Scheme may
+contain guards for a primitive values like <code>String</code> and <code>Number</code> and also
+guards for more complex data structures defined by other <code>Schema</code>s, or to
+put it other way <code>Schema</code> may contain guards that were created by <code>Schema</code>
+itself which allows defining deeply nested data structures.</p>
+
+<p>Generated guard will accept only object <code>values</code> as an argument. All the
+non-guarded properties (that are not present in the <code>descriptor</code>) of the
+<code>value</code> will be stripped out. All the missing properties of the <code>value</code>
+will be replaced / assembled from the defaults if associated guards provide
+fallback mechanism to default value.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Object</em>  descriptor</p><p>Object containing guards for the associated (same named properties) of
+the guarded object <code>value</code>.</p></li><li><p><strong>param</strong>: <em>String</em>  [message]</p><p>Optional error message template that will be a message of a <code>TypeError</code>
+that is will be thrown if returned guard is invoked with a wrong <code>value</code>
+type (other then "object" or "undefined"). If <code>message</code> contains
+<code>"{{value}}"</code> and <code>"{{type}}"</code> strings they are going to be replaced with
+an actual <code>value</code> and it's type.</p></li></ul>
+
+<h2>Examples</h2>
+
+<pre><code> var guards = require("guards");
+ var Point = guards.Schema({
+   x: guards.Number(0),
+   y: guards.Number(0)
+ });
+
+ var p1 = Point();
+ // { x: 0, y: 0 }
+
+ var p2 = Point({ x: 17, z: 50 });
+ // { x: 17, y: 0 }
+
+ var p3 = Point({ x: "5" });
+ // TypeError: Number expected instead of string `5`
+
+ var p4 = Point("{ y: 6 }");
+ // TypeError: Object expected instead of string `{ y: 6 }`
+
+
+ var Segment = guards.Schema({
+   start: Point,
+   end: Point,
+   opacity: guards.Number(1)
+ });
+
+ var s1 = Segment();
+ // { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 }
+
+ var s2 = Segment({ end: { x: 17 }, opacity: 0.5 });
+ // { start: { x: 0, y: 0 }, end: { x: 17, y: 0 }, opacity: 0.5 }
+
+ var s3 = Segment({ start: 17 });
+ // TypeError: Object expected instead of number `17`</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="class">Schema</span> = <span class="variable">exports</span>.<span class="class">Schema</span> = <span class="keyword">function</span> <span class="class">Schema</span>(<span class="variable">descriptor</span>, <span class="variable">message</span>) {
+  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
+  <span class="comment">// built-in one.</span>
+  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Object expected instead of {{type}} `{{value}}`"</span>;
+
+  <span class="comment">// If `descriptor` is a function then we assume it's a guard so we return it</span>
+  <span class="comment">// immediately, otherwise we generate a guard function from it.</span>
+  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GSchema</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
+    <span class="keyword">var</span> <span class="variable">data</span>;
+    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
+    <span class="comment">// falling back to the `{}`.</span>
+    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
+      <span class="variable">value</span> = {};
+    <span class="comment">// Since schema defines object structure guard accepts only object `value`s</span>
+    <span class="comment">// if given `value` is not an object we throw `TypeError` with a desired</span>
+    <span class="comment">// message.</span>
+    <span class="keyword">if</span> (!<span class="variable">isObject</span>(<span class="variable">value</span>))
+      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
+
+    <span class="comment">// At this point we have an object `value` containing properties that must</span>
+    <span class="comment">// be verified by guards of the `descriptor` to make sure that `value` has</span>
+    <span class="comment">// correct schema. We loop over `descriptor`s guards and invoke them with</span>
+    <span class="comment">// an associated `key` and `value`. Results are mapped to the `data` object</span>
+    <span class="comment">// that represents verified and normalized value. If any of the property</span>
+    <span class="comment">// guards will throw an exception it will propagate to a caller of this</span>
+    <span class="comment">// guard notifying it that given `value` does not has desired schema.</span>
+    <span class="variable">data</span> = {};
+    <span class="class">Object</span>.<span class="variable">keys</span>(<span class="variable">descriptor</span>).<span class="variable">forEach</span>(<span class="keyword">function</span>(<span class="variable">key</span>) {
+      <span class="keyword">var</span> <span class="variable">guard</span> = <span class="variable">descriptor</span>[<span class="variable">key</span>];
+      <span class="variable">data</span>[<span class="variable">key</span>] = <span class="variable">guard</span>(<span class="variable">value</span>[<span class="variable">key</span>], <span class="variable">key</span>);
+    }, <span class="this">this</span>);
+
+    <span class="comment">// If error was not thrown the `value` has a schema described by</span>
+    <span class="comment">// a `descriptor`. In such case we return map of the values properties</span>
+    <span class="comment">// (We can't return `value` itself as it may not contain default values</span>
+    <span class="comment">// for certain properties or may contain extra properties that have to</span>
+    <span class="comment">// be dropped).</span>
+    <span class="keyword">return</span> <span class="variable">data</span>;
+  };
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>Array</h1>
+
+<p>Array can be used to define guards for an arrays containing elements of some
+type or schema. Function takes <code>guard</code> as an argument that will guard all the
+elements of the <code>value</code> array that is passed to the returned guard.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Function</em>  guard</p><p>Guard that is going to be used to verify elements of the array. It can
+be any guard created by <code>String</code>, <code>Schema</code>, <code>Array</code> or any custom guard
+as well.</p></li><li><p><strong>param</strong>: <em>String</em>  [message]</p><p>Optional error message template that will be a message of a <code>TypeError</code>
+that is will be thrown if returned guard is invoked with a wrong <code>value</code>
+type (other then "array" or "undefined"). If <code>message</code> contains
+<code>"{{value}}"</code> and <code>"{{type}}"</code> strings they are going to be replaced with
+an actual <code>value</code> and it's type.</p></li></ul>
+
+<h2>Examples</h2>
+
+<pre><code> var guards = require("guards");
+ var Words = guards.Array(guards.String(""));
+
+ var ww1 = Words([ "foo", "bar" ]);
+ // [ 'foo', 'bar' ]
+
+ var ww2 = Words([ "foo", 9 ]);
+ // TypeError: String expected instead of number `9`
+
+ var Point = guards.Schema({
+   x: guards.Number(0),
+   y: guards.Number(0)
+ });
+ var Points = guards.Array(Point);
+
+ var pp1 = Points([{}, { x: 2, y: 8 }]);
+ // [ { x: 0, y: 0 }, { x: 2, y: 8 } ]
+
+ var pp2 = Points({ x: 2, y: 8 });
+ // TypeError: Array expected instead of object `[object Object]`
+
+
+ var Graph = guards.Array(Points);
+
+ var g1 = Graph([]);
+ // []
+
+ var g2 = Graph([
+   [{ x: 17, foo: "bar" }, { x: 16 }],
+   [{ y: 4 }],
+   []
+ ]);
+ // [ [ { x: 17, y: 0 }, { x: 16, y: 0 } ], [ { x: 0, y: 4 } ], [] ]</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">exports</span>.<span class="class">Array</span> = <span class="keyword">function</span> <span class="class">Array</span>(<span class="variable">guard</span>, <span class="variable">message</span>) {
+  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
+  <span class="comment">// built-in one.</span>
+  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Array expected instead of {{type}} `{{value}}`"</span>;
+
+  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GArray</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
+    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
+    <span class="comment">// falling back to the `[]`.</span>
+    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
+      <span class="variable">value</span> = [];
+    <span class="comment">// Since guard validates elements of the array given `value` must be an</span>
+    <span class="comment">// array we throw `TypeError` if this is not the case.</span>
+    <span class="keyword">if</span> (!<span class="variable">isArray</span>(<span class="variable">value</span>))
+      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
+
+    <span class="comment">// At this point we have an array `value` containing properties that must</span>
+    <span class="comment">// be verified by a desired `guard`. As result we return mapped array</span>
+    <span class="comment">// containing guarded values of the given array. Please note that we need</span>
+    <span class="comment">// to map original array as some values of it may be normalized (default</span>
+    <span class="comment">// values added for missing properties) by guards. If any of the element</span>
+    <span class="comment">// does not passes validation guard will throw `TypeError` and it will</span>
+    <span class="comment">// propagate to a caller of this guard notifying it that `value` does not</span>
+    <span class="comment">// validates.</span>
+    <span class="keyword">return</span> <span class="variable">value</span>.<span class="variable">map</span>(<span class="keyword">function</span>(<span class="variable">value</span>, <span class="variable">index</span>) {
+      <span class="keyword">return</span> <span class="variable">guard</span>(<span class="variable">value</span>, <span class="variable">index</span>);
+    }, <span class="this">this</span>);
+  };
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>Tuple</h1>
+
+<p>Tuple can be used to define guards for an arrays containing predefined
+amount of elements guarded by specific guards. Tuple guards are something
+in between Array and Schema guards. Function takes array of guards as an
+argument that will be used to validate same indexed elements of the <code>value</code>
+array that is passed to the returned guard.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Function[]</em>  guards</p><p>Guards that are going to be used to verify elements of the array. It can
+be any guard created by <code>String</code>, <code>Schema</code>, <code>Array</code> or any custom guard
+as well.</p></li><li><p><strong>param</strong>: <em>String</em>  [message]</p><p>Optional error message template that will be a message of a <code>TypeError</code>
+that is will be thrown if returned guard is invoked with a wrong <code>value</code>
+type (other then "array" or "undefined"). If <code>message</code> contains
+<code>"{{value}}"</code> and <code>"{{type}}"</code> strings they are going to be replaced with
+an actual <code>value</code> and it's type.</p></li></ul>
+
+<h2>Examples</h2>
+
+<pre><code> var guards = require("guards");
+ var Point = guards.Schema({
+   x: guards.Number(0),
+   y: guards.Number(0)
+ });
+ var Segment = guards.Schema({
+   start: Point,
+   end: Point,
+   opacity: guards.Number(1)
+ });
+ var Triangle = guards.Tuple([ Segment, Segment, Segment ]);
+
+ var t1 = Triangle();
+ // [ { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 },
+ //   { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 },
+ //   { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 }
+ // ]
+
+ var t2 = Triangle([
+   { opacity: 0, foo: "bar" },
+   { start: { x: 2 } }
+ ]);
+ // [ { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 0 },
+ //   { start: { x: 2, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 },
+ //   { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 }
+ // ]
+
+ var t2 = Triangle("foo");
+ // TypeError: Array expected instead of string `foo`
+
+ var t3 = Triangle([{ start: { x: '3' } } ]);
+ // TypeError: Number expected instead of string `3`
+
+ var Pointer = guards.Tuple([ Point, Segment ]);
+
+ var p1 = Pointer();
+ // [ { x: 0, y: 0 }, { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 } ]
+
+ var p2 = Pointer([ { x: 17 }, { opacity: 0 } ]);
+ // [ { x: 17, y: 0 }, { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 0 } ]
+
+ var p3 = Pointer([ { foo: "bar" }, { baz: "bla" }, "foo" ]);
+ // [ { x: 0, y: 0 }, { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 } ]</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">exports</span>.<span class="class">Tuple</span> = <span class="keyword">function</span> <span class="class">Tuple</span>(<span class="variable">guards</span>, <span class="variable">message</span>) {
+  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
+  <span class="comment">// built-in one.</span>
+  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Array expected instead of {{type}} `{{value}}`"</span>;
+
+  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GTuple</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
+    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
+    <span class="comment">// falling back to the `[]`.</span>
+    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
+      <span class="variable">value</span> = [];
+    <span class="comment">// Since guard validates elements of the array given `value` must be an</span>
+    <span class="comment">// array we throw `TypeError` if this is not the case.</span>
+    <span class="keyword">if</span> (!<span class="variable">isArray</span>(<span class="variable">value</span>))
+      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
+
+    <span class="comment">// At this point we have an array `value` containing properties that must</span>
+    <span class="comment">// be verified by a guards in the `descriptor`. As result we return mapped</span>
+    <span class="comment">// array containing guarded values of the given array. Please note that we</span>
+    <span class="comment">// need to map original array as some values of it may be normalized</span>
+    <span class="comment">// (default values added for missing properties) by guards also we map only</span>
+    <span class="comment">// elements that are guarded by `descriptor` any additional ones will be</span>
+    <span class="comment">// stripped off. If any element won't pass validation, responsible guard</span>
+    <span class="comment">// will throw `TypeError` and it will propagate to a caller of this guard</span>
+    <span class="comment">// notifying it that `value` does not validates.</span>
+    <span class="keyword">return</span> <span class="variable">guards</span>.<span class="variable">map</span>(<span class="keyword">function</span>(<span class="variable">guard</span>, <span class="variable">index</span>) {
+      <span class="keyword">return</span> <span class="variable">guard</span>(<span class="variable">value</span>[<span class="variable">index</span>], <span class="variable">index</span>);
+    }, <span class="this">this</span>);
+  };
+};
+</code></pre>
+</td>
+</tr>	</body>
+</html></tbody></table>
