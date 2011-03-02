@@ -118,4 +118,70 @@ exports["test array guard"] = function(assert) {
                    "arrray of arrays of points works fine");
 };
 
+exports["test tuple guards"] = function(assert) {
+  var guards = require("guards");
+  var Point = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
+  });
+  var Segment = guards.Schema({
+    start: Point,
+    end: Point,
+    opacity: guards.Number(1)
+  });
+  var Triangle = guards.Tuple([ Segment, Segment, Segment ]);
+
+  assert.deepEqual(Triangle(),
+                  [
+                    { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 },
+                    { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 },
+                    { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 }
+                  ],
+                  "if no argument passed then defaults are picked up");
+
+  assert.deepEqual(Triangle([
+                    { opacity: 0, foo: "bar" },
+                    { start: { x: 2 } }
+                  ]),
+                  [
+                    { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 0 },
+                    { start: { x: 2, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 },
+                    { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 }
+                  ],
+                  "defualts picked up non-guarded stripped");
+
+    assert.throws(function() {
+      Triangle("foo");
+    }, /Array/g, "Tuple guard accepts only array");
+
+    assert.throws(function() {
+      Triangle([{ start: { x: "3" } } ]);
+    }, /Number/g, "Nested guard throws if wrong `value` is passed");
+
+
+    var Pointer = guards.Tuple([ Point, Segment ]);
+
+    assert.deepEqual(Pointer(),
+                    [
+                      { x: 0, y: 0 },
+                      { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 }
+                    ],
+                    "Falls back to the default values");
+
+    assert.deepEqual(Pointer([{ x: 17 }, { opacity: 0 }]),
+                    [
+                      { x: 17, y: 0 },
+                      { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 0 }
+                    ],
+                    "Defaults picked up, non-guarded stripped out");
+
+
+    assert.deepEqual(Pointer([{ foo: "bar" }, { baz: "bla" }, "foo"]),
+                    [
+                      { x: 0, y: 0 },
+                      { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 }
+                    ],
+                    "Non-guarded elements and values ar stripped out");
+};
+
 require("test").run(exports)
