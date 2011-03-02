@@ -184,4 +184,39 @@ exports["test tuple guards"] = function(assert) {
                     "Non-guarded elements and values ar stripped out");
 };
 
+exports["test custom guards"] = function(assert) {
+  var Point = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
+  });
+  function color(value) {
+    if (typeof value === "number" && value <= 255 && value >= 0)
+      return value
+    throw new TypeError("Color is a number between 0 and 255");
+  }
+  var RGB = guards.Tuple([ color, color, color ]);
+  var Segment = guards.Schema({
+    start: Point,
+    end: Point,
+    color: RGB,
+  });
+
+  assert.deepEqual(Segment({ end: { y: 23 }, color: [17, 255, 0] }),
+                  { start: { x: 0, y: 0 },
+                    end: { x: 0, y: 23 },
+                    color: [ 17, 255, 0 ]
+                  },
+                  "defaults values used for missing properties");
+  assert.deepEqual(Segment({ color: [ 1, 2, 3, 0.5 ] }).color,
+                  [ 1, 2, 3 ],
+                  "non guarded tuple elements are stripped out");
+
+  assert.throws(function() {
+    Segment({ colors: [] });
+  }, /Color is a number between 0 and 255/, "no defualt for colors");
+  assert.throws(function() {
+    Segment({ colors: [ 0, 255, 256 ] });
+  }, /Color is a/, "color out of the range");
+}
+
 require("test").run(exports)
