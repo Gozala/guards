@@ -7,10 +7,10 @@ exports["test string guard"] = function(assert) {
   assert.equal(g1(), "default", "correct default value is assigned");
   assert.equal(g1("foo"), "foo", "string guard accepts string values");
   assert.throws(function() {
-    var value = g1(12);
+    g1(12);
   }, /String/g, "non-string passed to a string gaurd throws a TypeError");
   assert.throws(function() {
-    var value = g1(new String("foo bar"));
+    g1(new String("foo bar"));
   }, /String/g, "String instance throws exception as well");
 
   var g2 = guards.String();
@@ -19,7 +19,7 @@ exports["test string guard"] = function(assert) {
   var g3 = guards.String("", "Boom -> {{value}}!");
   assert.throws(function() {
     var value = g3({});
-  }, /Boom \-\> \[object Object\]!/g, "Optional error temaplaet can be used");
+  }, /Boom \-\> \[object Object\]!/g, "Optional error temaplate can be used");
 };
 
 
