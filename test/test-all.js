@@ -76,4 +76,46 @@ exports["test schema guard"] = function(assert) {
   }, /Object/g, "nested guard throw on wrong value types");
 };
 
+exports["test array guard"] = function(assert) {
+  var Words = guards.Array(guards.String(""));
+
+  assert.deepEqual(Words([]), [], "Empty array passes through");
+  assert.deepEqual(Words([ "foo", "bar" ]), [ "foo", "bar" ],
+                   "primitive type array works fine");
+
+  assert.throws(function() {
+    Words([ "foo", 9 ]);
+  }, /String/g, "throw because it got number instead of string");
+
+  var Point = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
+  });
+  var Points = guards.Array(Point);
+
+  assert.deepEqual(Points([{ foo: 'bar' }, { x: 2, y: 8 }]),
+                   [ { x: 0, y: 0 }, { x: 2, y: 8 } ],
+                   "Defualts used were needed and non-guradede stripped off");
+
+  assert.throws(function() {
+    Points({ x: 2, y: 8 })
+  }, /Array/g, "TypeError is thrown if value is not an array");
+
+
+  var Graph = guards.Array(Points);
+
+  assert.deepEqual(Graph([]), [], "empty array passes through");
+  assert.deepEqual(Graph([
+                          [{ x: 17, foo: "bar" }, { x: 16 }],
+                          [{ y: 4 }],
+                          []
+                   ]),
+                   [
+                     [ { x: 17, y: 0 }, { x: 16, y: 0 } ],
+                     [ { x: 0, y: 4 } ],
+                     []
+                   ],
+                   "arrray of arrays of points works fine");
+};
+
 require("test").run(exports)
