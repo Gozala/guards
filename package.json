@@ -1,0 +1,30 @@
+{ "name": "guards"
+, "version": "0.0.1"
+, "description": "Data type & structure checking, runtime analog of types"
+, "homepage": "http://github.com/Gozala/guards/"
+, "keywords": ["guards", "structures"]
+, "contributors":
+  [ "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)" ]
+, "repository":
+  { "type": "git"
+  , "url": "git://github.com/Gozala/guards.git"
+  }
+, "bugs": { "web": "http://github.com/Gozala/guards/issues/" }
+, "directories":
+  { "doc": "./docs"
+  , "lib": "./lib"
+  , "test": "./test"
+  }
+, "dependencies": { "test": ">=0.0.10" }
+, "main": "./lib/guards.js"
+, "scripts": { "test": "node test/test-all.js" }
+, "engines":
+  { "node": ">=0.1.103"
+  , "teleport": ">=0.2.0"
+  }
+, "licenses" :
+  [ { "type" : "MPL 1.1/LGPL 2.1/GPL 2.0"
+    , "url" : "http://www.mozilla.org/MPL/"
+    }
+  ]
+}
