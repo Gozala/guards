@@ -35,5 +35,5 @@ runtime analog of types. Check out [docs] for more details.
 
 [EcmaScript Guards proposal]:http://wiki.ecmascript.org/doku.php?id=strawman:guards
 [StructsJS]:https://github.com/dherman/structsjs
-[docs]:https://github.com/Gozala/guards/docs
+[docs]:http://jeditoolkit.com/guards/docs/
 
