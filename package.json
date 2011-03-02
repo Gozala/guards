@@ -1,7 +1,7 @@
 { "name": "guards"
 , "version": "0.0.1"
 , "description": "Data type & structure checking, runtime analog of types"
-, "homepage": "http://github.com/Gozala/guards/"
+, "homepage": "http://jeditoolkit.com/guards/docs/"
 , "keywords": ["guards", "structures"]
 , "contributors":
   [ "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)" ]
