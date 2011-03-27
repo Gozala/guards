@@ -217,6 +217,25 @@ exports["test custom guards"] = function(assert) {
   assert.throws(function() {
     Segment({ colors: [ 0, 255, 256 ] });
   }, /Color is a/, "color out of the range");
-}
+};
+
+exports["test AnyOf guards"] = function(assert) {
+  var guards = require("guards");
+  var ObjectPoint = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
+  });
+  var ArrayPoint = guards.Tuple([
+    guards.Number(0),
+    guards.Number(0)
+  ]);
+  var Point = guards.AnyOf(ObjectPoint, ArrayPoint);
+
+  assert.deepEqual(Point([ 1 ]), [ 1, 0 ], "ArrayPoint validates");
+  assert.deepEqual(Point({ y: 15 }), { x: 0, y: 15 }, "ObjectPoint validates");
+  assert.throws(function() {
+    Point(1, 2)
+  }, /invalid/, "Number does not validates");
+};
 
 require("test").run(exports)
