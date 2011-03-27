@@ -238,4 +238,20 @@ exports["test AnyOf guards"] = function(assert) {
   }, /invalid/, "Number does not validates");
 };
 
+exports["test function guards"] = function(assert) {
+  var guards = require("guards");
+  var Callee = guards.Function("Anonymous");
+  var f1 = function () { return "hello world" }
+
+  assert.equal(Callee(Object), Object, "Object validates");
+  assert.equal(Callee(f1), f1, "function validates");
+  assert.throws(function() {
+    Callee(7);
+  }, /Function expected/, "Number does not validates as Function");
+  assert.throws(function() {
+    var Callee2 = guards.Function("Hi", "{{type}} is not a function.");
+    Callee2({});
+  }, /object is not a function/, "custom error message is thrown");
+};
+
 require("test").run(exports)
