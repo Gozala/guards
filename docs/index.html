@@ -1,6 +1,6 @@
-<a href="http://github.com/Gozala/guards"><img alt="Fork me on GitHub" id="ribbon" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a><html>
+<html>
 	<head>
-		<title></title>
+		<title>Dont forget to use --title to specify me!</title>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 		<style>body {
     margin: 0;
@@ -108,39 +108,7 @@ code .this { color: #19469D; }</style>
 		</script>
 	</head>
 	<body>
-<table id="source"><tbody><tr><td><h1></h1><h1>guards</h1>
-
-<p>JavaScript library for data type &amp; data structure validations providing a
-runtime analog of types. Check out <a href="http://jeditoolkit.com/guards/docs/">docs</a> for more details.</p>
-
-<h2>Install</h2>
-
-<pre><code>npm install guards</code></pre>
-
-<h2>Example</h2>
-
-<pre><code>var guards = require("guards");
-var Point = guards.Schema({
-  x: guards.Number(0),
-  y: guards.Number(0)
-});
-function color(value) {
-  if (typeof value === "number" &amp;&amp; value &lt;= 255 &amp;&amp; value &gt;= 0)
-    return value
-  throw new TypeError("Color is a number between 0 and 255");
-}
-var RGB = guards.Tuple([ color, color, color ]);
-var Segment = guards.Schema({
-  start: Point,
-  end: Point,
-  color: RGB,
-});
-var segment = Segment({ end: { y: 23 }, color: [17, 255, 0] })
-// { start: { x: 0, y: 0 }, end: { x: 0, y: 23 }, color: [ 17, 255, 0 ] }</code></pre>
-
-<h2>Prior art</h2>
-
-<ul><li><a href="http://wiki.ecmascript.org/doku.php?id=strawman:guards">EcmaScript Guards proposal</a></li><li><a href="https://github.com/dherman/structsjs">StructsJS</a></li></ul></td><td></td></tr><tr class="filename"><td><h2 id="lib/guards.js"><a href="#">guards</a></h2></td><td>lib/guards.js</td></tr><tr class="code">
+<table id="source"><tbody><tr><td><h1>Dont forget to use --title to specify me!</h1></td><td></td></tr><tr class="filename"><td><h2 id="lib/guards.js"><a href="#">guards</a></h2></td><td>lib/guards.js</td></tr><tr class="code">
 <td class="docs">
 <p> vim:ts=2:sts=2:sw=2:
 <strong></strong><em> BEGIN LICENSE BLOCK <strong></strong></em>
@@ -191,6 +159,71 @@ the terms of any one of the MPL, the GPL or the LGPL.</p>
 <span class="variable">isNumber</span> = <span class="variable">utils</span>.<span class="variable">isNumber</span>;
 <span class="variable">isString</span> = <span class="variable">utils</span>.<span class="variable">isString</span>;
 <span class="variable">isObject</span> = <span class="variable">utils</span>.<span class="variable">isObject</span>;</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>Function</h1>
+
+<p>Function creates a function guard - function that may be used to perform run
+time type checks on the values. Function takes an optional <code>defaultValue</code>
+that will be returned by a created guard if it's invoked without (or with
+<code>undefined</code>) <code>value</code> argument. The <code>defaultValue</code> will fall back to
+<code>undefined</code> if not provided. Function also takes another optional argument
+<code>message</code> that represents a template of a message of the <code>TypeError</code> that
+will be thrown by guard if it's invoked with invalid <code>value</code>.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>Object | String | Number | function</em>  [defaultValue]</p><p>Value that returned guard is going to fall back to if invoked without
+a <code>value</code> or if it's <code>undefined</code>.</p></li><li><p><strong>param</strong>: <em>String</em>  [message]</p><p>Optional error message template that will be a message of a <code>TypeError</code>
+that is will be thrown if returned guard is invoked with a wrong <code>value</code>
+type. If <code>message</code> contains <code>"{{value}}"</code> and <code>"{{type}}"</code> strings they
+are going to be replaced with an actual <code>value</code> and it's type.</p></li></ul>
+
+<h2>Examples</h2>
+
+<pre><code> var guards = require("guards");
+
+ var Callee = guards.Function("Anonymous");
+
+ Callee(Object) == Object
+ // true
+
+ Callee(function() { return "hello world" })
+ Callee(function() { return "hello world" })
+
+ Callee(7);
+ // TypeError: Function expected instead of number `7`
+
+ guards.Function("Hi", "{{type}} is not a function.");
+
+ Callee({})
+ // TypeError: object is not a function</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">exports</span>.<span class="class">Function</span> = <span class="keyword">function</span> <span class="class">Function</span>(<span class="variable">defaultValue</span>, <span class="variable">message</span>) {
+  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Function expected instead of {{type}} `{{value}}`"</span>;
+
+  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">FunctionG</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
+    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
+    <span class="comment">// falling back to the `defaultValue`.</span>
+    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
+      <span class="variable">value</span> = <span class="variable">defaultValue</span>;
+    <span class="comment">// If `value` is defined and it's not a function `TypeError` is thrown with</span>
+    <span class="comment">// a desired message.</span>
+    <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="variable">isFunction</span>(<span class="variable">value</span>))
+      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
+                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
+
+    <span class="comment">// If error was not thrown the `value` passed a guard successfully and it</span>
+    <span class="comment">// can be returned.</span>
+    <span class="keyword">return</span> <span class="variable">value</span>;
+  }
+};</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -410,7 +443,7 @@ an actual <code>value</code> and it's type.</p></li></ul>
     <span class="comment">// Since schema defines object structure guard accepts only object `value`s</span>
     <span class="comment">// if given `value` is not an object we throw `TypeError` with a desired</span>
     <span class="comment">// message.</span>
-    <span class="keyword">if</span> (!<span class="variable">isObject</span>(<span class="variable">value</span>))
+    <span class="keyword">if</span> (!<span class="variable">isObject</span>(<span class="variable">value</span>) || <span class="variable">isArray</span>(<span class="variable">value</span>))
       <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
                                  .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
                                  .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
@@ -626,7 +659,68 @@ an actual <code>value</code> and it's type.</p></li></ul>
       <span class="keyword">return</span> <span class="variable">guard</span>(<span class="variable">value</span>[<span class="variable">index</span>], <span class="variable">index</span>);
     }, <span class="this">this</span>);
   };
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>AnyOf</h1>
+
+<p><code>AnyOf</code> can be used to define guards that validates <code>value</code>s that must
+satisfy just one of many guards. This is handy in specific specific
+scenarios were valid <code>value</code> may have different types or schemas.
+Function takes any number guards as an arguments and returns composed
+guard, which when called will try to validate a given <code>value</code> with a given
+guards in an order they were passed, the first validate <code>value</code> is returned
+as result, unless non will validate in which case <code>TypeError</code> is thrown.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>params</strong>: <em>Function</em>  guard</p><p>Guards used for validations.</p></li><li><p><strong>returns</strong>: <em>Function</em> </p></li></ul>
+
+<h2>Examples</h2>
+
+<pre><code> var guards = require("guards");
+ var ObjectPoint = guards.Schema({
+   x: guards.Number(0),
+   y: guards.Number(0)
+ });
+ var ArrayPoint = guards.Tuple([
+   guards.Number(0),
+   guards.Number(0)
+ ]);
+ var Point = guards.AnyOf(ObjectPoint, ArrayPoint);
+
+ Point([ 1 ])
+ // [ 1, 0 ]
+
+ Point({ y: 15 })
+ // { x: 0, y: 15 }
+
+ Point(1, 2)
+ // TypeError: Passed value: `1` has invalid type or structure</code></pre>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">exports</span>.<span class="class">AnyOf</span> = <span class="keyword">function</span> <span class="class">AnyOf</span>() {
+  <span class="comment">// Template of error `message` that will be thrown if incorrect `value` is</span>
+  <span class="comment">// passed to it.</span>
+  <span class="keyword">var</span> <span class="variable">message</span> = <span class="string">"Passed value: `{{value}}` has invalid type or structure"</span>;
+  <span class="comment">// Saving array of the value guards.</span>
+  <span class="keyword">var</span> <span class="variable">guards</span> = <span class="class">Array</span>.<span class="variable">prototype</span>.<span class="variable">slice</span>.<span class="variable">call</span>(<span class="variable">arguments</span>);
+  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GAnyOf</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
+    <span class="comment">// We try to return `value` that passes at least on validation, by trying</span>
+    <span class="comment">// to validate it with each guard.</span>
+    <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable">i</span> = <span class="number integer">0</span>, <span class="variable">ii</span> = <span class="variable">guards</span>.<span class="variable">length</span>; <span class="variable">i</span> < <span class="variable">ii</span>; <span class="variable">i</span>++)
+      <span class="keyword">try</span> { <span class="keyword">return</span> <span class="variable">guards</span>[<span class="variable">i</span>](<span class="variable">value</span>, <span class="variable">key</span>); } <span class="keyword">catch</span>(<span class="variable">e</span>) {}
+    <span class="comment">// If got this far then non of the validations succeeded as value was not</span>
+    <span class="comment">// returned, so we throw a `TypeError` that will propagate to a caller of</span>
+    <span class="comment">// this guard notifying it that `value` does not validates.</span>
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>));
+  }
 };
+
 </code></pre>
 </td>
 </tr>	</body>
