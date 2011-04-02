@@ -3,7 +3,7 @@
 var guards = require("guards");
 
 exports["test string guard"] = function(assert) {
-  var g1 = guards.String("default");
+  var g1 = guards.String({ defaults: "default" });
   assert.equal(g1(), "default", "correct default value is assigned");
   assert.equal(g1("foo"), "foo", "string guard accepts string values");
   assert.throws(function() {
@@ -11,19 +11,25 @@ exports["test string guard"] = function(assert) {
   }, /String/g, "non-string passed to a string gaurd throws a TypeError");
   assert.throws(function() {
     g1(new String("foo bar"));
-  }, /String/g, "String instance throws exception as well");
+  }, /String/, "String instance throws exception as well");
 
   var g2 = guards.String();
-  assert.strictEqual(g2(), undefined, "`undefined` is fallback for default");
+  assert.throws(function() {
+    g2();
+  }, /String/, "no default value is given");
 
-  var g3 = guards.String("", "Boom -> {{value}}!");
+  var g3 = guards.String({ message: "Boom -> {{value}}!" });
   assert.throws(function() {
     var value = g3({});
   }, /Boom \-\> \[object Object\]!/g, "Optional error temaplate can be used");
+  assert.throws(function() {
+    g3();
+  }, /Boom \-\>/, "no default value was given");
+  assert.equal(g3("baz"), "baz", "string value validates");
 };
 
 exports["test number guard"] = function(assert) {
-  var g1 = guards.Number(0);
+  var g1 = guards.Number({ defaults: 0 });
   assert.equal(g1(), 0, "correct default value is assigned");
   assert.equal(g1(17), 17, "string guard accepts string values");
   assert.throws(function() {
@@ -31,9 +37,14 @@ exports["test number guard"] = function(assert) {
   }, /Number/g, "non-number throws a TypeError");
 
   var g2 = guards.Number();
-  assert.strictEqual(g2(), undefined, "`undefined` is fallback for default");
+  assert.throws(function() {
+    g2()
+  }, "throws when no default value is given");
 
-  var g3 = guards.Number(0, "number expected not a {{type}}");
+  var g3 = guards.Number({
+    defaults: 0,
+    message: "number expected not a {{type}}"
+  });
   assert.throws(function() {
     g3("boom!");
   }, /number expected not a string/g, "Optional error temaplate can be used");
@@ -41,8 +52,8 @@ exports["test number guard"] = function(assert) {
 
 exports["test schema guard"] = function(assert) {
   var Point = guards.Schema({
-    x: guards.Number(0),
-    y: guards.Number(0)
+    x: guards.Number({ defaults: 0 }),
+    y: guards.Number({ defaults: 0 })
   });
 
   assert.deepEqual(Point(), { x: 0, y: 0 }, "default values are insterted");
@@ -60,7 +71,7 @@ exports["test schema guard"] = function(assert) {
   var Segment = guards.Schema({
     start: Point,
     end: Point,
-    opacity: guards.Number(1)
+    opacity: guards.Number({ defaults: 1 })
   });
 
   assert.deepEqual(Segment(),
@@ -77,7 +88,7 @@ exports["test schema guard"] = function(assert) {
 };
 
 exports["test array guard"] = function(assert) {
-  var Words = guards.Array(guards.String(""));
+  var Words = guards.Array(guards.String({ defaults: "" }));
 
   assert.deepEqual(Words([]), [], "Empty array passes through");
   assert.deepEqual(Words([ "foo", "bar" ]), [ "foo", "bar" ],
@@ -88,8 +99,8 @@ exports["test array guard"] = function(assert) {
   }, /String/g, "throw because it got number instead of string");
 
   var Point = guards.Schema({
-    x: guards.Number(0),
-    y: guards.Number(0)
+    x: guards.Number({ defaults: 0 }),
+    y: guards.Number({ defaults: 0 })
   });
   var Points = guards.Array(Point);
 
@@ -98,7 +109,7 @@ exports["test array guard"] = function(assert) {
                    "Defualts used were needed and non-guradede stripped off");
 
   assert.throws(function() {
-    Points({ x: 2, y: 8 })
+    Points({ x: 2, y: 8 });
   }, /Array/g, "TypeError is thrown if value is not an array");
 
 
@@ -121,13 +132,13 @@ exports["test array guard"] = function(assert) {
 exports["test tuple guards"] = function(assert) {
   var guards = require("guards");
   var Point = guards.Schema({
-    x: guards.Number(0),
-    y: guards.Number(0)
+    x: guards.Number({ defaults: 0 }),
+    y: guards.Number({ defaults: 0 })
   });
   var Segment = guards.Schema({
     start: Point,
     end: Point,
-    opacity: guards.Number(1)
+    opacity: guards.Number({ defaults: 1 })
   });
   var Triangle = guards.Tuple([ Segment, Segment, Segment ]);
 
@@ -186,8 +197,8 @@ exports["test tuple guards"] = function(assert) {
 
 exports["test custom guards"] = function(assert) {
   var Point = guards.Schema({
-    x: guards.Number(0),
-    y: guards.Number(0)
+    x: guards.Number({ defaults: 0 }),
+    y: guards.Number({ defaults: 0 })
   });
   function color(value) {
     if (typeof value === "number" && value <= 255 && value >= 0)
@@ -222,12 +233,12 @@ exports["test custom guards"] = function(assert) {
 exports["test AnyOf guards"] = function(assert) {
   var guards = require("guards");
   var ObjectPoint = guards.Schema({
-    x: guards.Number(0),
-    y: guards.Number(0)
+    x: guards.Number({ defaults: 0 }),
+    y: guards.Number({ defaults: 0 })
   });
   var ArrayPoint = guards.Tuple([
-    guards.Number(0),
-    guards.Number(0)
+    guards.Number({ defaults: 0 }),
+    guards.Number({ defaults: 0 })
   ]);
   var Point = guards.AnyOf(ObjectPoint, ArrayPoint);
 
@@ -240,7 +251,7 @@ exports["test AnyOf guards"] = function(assert) {
 
 exports["test function guards"] = function(assert) {
   var guards = require("guards");
-  var Callee = guards.Function("Anonymous");
+  var Callee = guards.Function({ defaults: "Anonymous" });
   var f1 = function () { return "hello world" }
 
   assert.equal(Callee(Object), Object, "Object validates");
@@ -249,7 +260,10 @@ exports["test function guards"] = function(assert) {
     Callee(7);
   }, /Function expected/, "Number does not validates as Function");
   assert.throws(function() {
-    var Callee2 = guards.Function("Hi", "{{type}} is not a function.");
+    var Callee2 = guards.Function({
+      defaults: "Hi",
+      message: "{{type}} is not a function."
+    });
     Callee2({});
   }, /object is not a function/, "custom error message is thrown");
 };

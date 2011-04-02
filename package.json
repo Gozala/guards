@@ -1,5 +1,5 @@
 { "name": "guards"
-, "version": "0.0.1"
+, "version": "0.0.2"
 , "description": "Data type & structure checking, runtime analog of types"
 , "homepage": "http://jeditoolkit.com/guards/docs/"
 , "keywords": ["guards", "structures"]
