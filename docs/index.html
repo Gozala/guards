@@ -110,55 +110,128 @@ code .this { color: #19469D; }</style>
 	<body>
 <table id="source"><tbody><tr><td><h1>Dont forget to use --title to specify me!</h1></td><td></td></tr><tr class="filename"><td><h2 id="lib/guards.js"><a href="#">guards</a></h2></td><td>lib/guards.js</td></tr><tr class="code">
 <td class="docs">
-<p> vim:ts=2:sts=2:sw=2:
-<strong></strong><em> BEGIN LICENSE BLOCK <strong></strong></em>
-## Version MPL 1.1/GPL 2.0/LGPL 2.1</p>
-
-<p>The contents of this file are subject to the Mozilla Public License Version
-1.1 (the "License"); you may not use this file except in compliance with
-the License. You may obtain a copy of the License at
-http://www.mozilla.org/MPL/</p>
-
-<p>Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
-for the specific language governing rights and limitations under the
-License.</p>
-
-<p>The Original Code is Jetpack.</p>
-
-<p>The Initial Developer of the Original Code is
-the Mozilla Foundation.
-Portions created by the Initial Developer are Copyright (C) 2010
-the Initial Developer. All Rights Reserved.</p>
-
-<p>Contributor(s):
-  Irakli Gozalishvili <a href="mailto:gozala@mozilla.com">gozala@mozilla.com</a> (Original Author)</p>
-
-<p>Alternatively, the contents of this file may be used under the terms of
-either the GNU General Public License Version 2 or later (the "GPL"), or
-the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
-in which case the provisions of the GPL or the LGPL are applicable instead
-of those above. If you wish to allow use of your version of this file only
-under the terms of either the GPL or the LGPL, and not to allow others to
-use your version of this file under the terms of the MPL, indicate your
-decision by deleting the provisions above and replace them with the notice
-and other provisions required by the GPL or the LGPL. If you do not delete
-the provisions above, a recipient may use your version of this file under
-the terms of any one of the MPL, the GPL or the LGPL.</p>
-
-<p><strong></strong><em> END LICENSE BLOCK <strong></strong></em> </p>
+<p> vim:set ts=2 sw=2 sts=2 expandtab </p>
 </td>
 <td class="code">
-<pre><code><span class="string">"use strict"</span>;
 
-<span class="keyword">var</span> <span class="variable">isArray</span>, <span class="variable">isFunction</span>, <span class="variable">isObject</span>, <span class="variable">isUndefined</span>, <span class="variable">isNumber</span>, <span class="variable">isString</span>, <span class="variable">utils</span>;
-<span class="variable">utils</span> = <span class="variable">require</span>(<span class="string">"./type"</span>);
-<span class="variable">isArray</span> = <span class="variable">utils</span>.<span class="variable">isArray</span>;
-<span class="variable">isFunction</span> = <span class="variable">utils</span>.<span class="variable">isFunction</span>;
-<span class="variable">isUndefined</span> = <span class="variable">utils</span>.<span class="variable">isUndefined</span>;
-<span class="variable">isNumber</span> = <span class="variable">utils</span>.<span class="variable">isNumber</span>;
-<span class="variable">isString</span> = <span class="variable">utils</span>.<span class="variable">isString</span>;
-<span class="variable">isObject</span> = <span class="variable">utils</span>.<span class="variable">isObject</span>;</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>jshint newcap: true undef: true es5: true node: true devel: true
+         forin: true </p>
+</td>
+<td class="code">
+
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>global define: true </p>
+</td>
+<td class="code">
+<pre><code>(<span class="keyword">typeof</span> <span class="variable">define</span> !== <span class="string">"function"</span> ? <span class="keyword">function</span>($){ $(<span class="variable">require</span>, <span class="variable">exports</span>, <span class="variable">module</span>); } : <span class="variable">define</span>)(<span class="keyword">function</span>(<span class="variable">require</span>, <span class="variable">exports</span>, <span class="variable">module</span>, <span class="variable">undefined</span>) {
+
+<span class="keyword">var</span> <span class="variable">utils</span> = <span class="variable">require</span>(<span class="string">"./type"</span>);
+<span class="keyword">var</span> <span class="class">Extendable</span> = <span class="variable">require</span>(<span class="string">"./extendables"</span>).<span class="class">Extendable</span>;
+<span class="keyword">var</span> <span class="variable">isArray</span> = <span class="variable">utils</span>.<span class="variable">isArray</span>;
+<span class="keyword">var</span> <span class="variable">isFunction</span> = <span class="variable">utils</span>.<span class="variable">isFunction</span>;
+<span class="keyword">var</span> <span class="variable">isUndefined</span> = <span class="variable">utils</span>.<span class="variable">isUndefined</span>;
+<span class="keyword">var</span> <span class="variable">isNull</span> = <span class="variable">utils</span>.<span class="variable">isNull</span>;
+<span class="keyword">var</span> <span class="variable">isNumber</span> = <span class="variable">utils</span>.<span class="variable">isNumber</span>;
+<span class="keyword">var</span> <span class="variable">isString</span> = <span class="variable">utils</span>.<span class="variable">isString</span>;
+<span class="keyword">var</span> <span class="variable">isObject</span> = <span class="variable">utils</span>.<span class="variable">isObject</span>;
+<span class="keyword">var</span> <span class="variable">isBoolean</span> = <span class="variable">utils</span>.<span class="variable">isBoolean</span>;
+<span class="keyword">var</span> <span class="variable">owns</span> = <span class="class">Function</span>.<span class="variable">prototype</span>.<span class="variable">call</span>.<span class="variable">bind</span>(<span class="class">Object</span>.<span class="variable">prototype</span>.<span class="variable">hasOwnProperty</span>);
+
+<span class="keyword">function</span> <span class="variable">getOwnPropertyDescriptors</span>(<span class="variable">object</span>) {
+  <span class="keyword">var</span> <span class="variable">descriptors</span> = {};
+  <span class="class">Object</span>.<span class="variable">getOwnPropertyNames</span>(<span class="variable">object</span>).<span class="variable">forEach</span>(<span class="keyword">function</span>(<span class="variable">name</span>) {
+    <span class="variable">descriptors</span>[<span class="variable">name</span>] = <span class="class">Object</span>.<span class="variable">getOwnPropertyDescriptor</span>(<span class="variable">object</span>, <span class="variable">name</span>);
+  });
+  <span class="keyword">return</span> <span class="variable">descriptors</span>;
+}
+
+<span class="keyword">var</span> <span class="class">NO_DEFAULT</span> = { <span class="variable">valueOf</span>: <span class="keyword">function</span>() { <span class="keyword">return</span> <span class="string">"Guard without default"</span>; } };
+
+<span class="variable">exports</span>.<span class="variable">version</span> = <span class="string">"0.2.0"</span>;</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>Guard</h1>
+
+<p>Function takes <code>isValid</code> function and <code>message</code> as an argument and returns
+guard generator function. Returned function may be used to generate value
+guards that are validated with given <code>isValid</code> function. Please see
+<code>exports.Number</code> or <code>exports.String</code> for more details.
+## </p>
+
+<ul><li><p><strong>param</strong>: <em>Function</em>  isValid</p><p>Function that will be used by guard to validate values. It will be called
+with <code>value</code> argument that needs to be validated. If function returns
+<code>true</code> value is valid if <code>false</code> it's not.</p></li><li><p><strong>param</strong>: <em>String</em>  [message="Unexpected value: `{{value}}`"]</p><p>Optional <code>message</code> argument may be passed that will be used as a template
+for a <code>TypeError</code> message that is thrown by generated guards when called
+with invalid values.</p></li></ul>
+</td>
+<td class="code">
+
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<h1>Guard</h1>
+
+<p>Guard function that may be called with a <code>value</code> to be set to a guarded
+variable. If <code>value</code> is invalid <code>TypeError</code> is thrown. Optionally second
+<code>name</code> argument may be passed, which is useful when guards are used for
+object properties. In such case <code>name</code> argument just name of object
+property and will be used to give a better error messages.
+## </p>
+
+<ul><li><p><strong>param</strong>: <em>Object | String | Number | function</em>  value</p><p>Value to be validated.</p></li><li><p><strong>param</strong>: <em>String</em>  name</p><p>Name of the property that is being guarded.</p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="keyword">var</span> <span class="class">Guard</span> = <span class="class">Extendable</span>.<span class="variable">extend</span>({
+  <span class="variable">constructor</span>: <span class="keyword">function</span> <span class="class">Guard</span>(<span class="variable">value</span>, <span class="variable">name</span>) {
+    <span class="comment">// If guard has a default value and guard is called with `undefined`</span>
+    <span class="comment">// `value` just falling back to the `defaultValue`.</span>
+    <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">defaults</span> !== <span class="class">NO_DEFAULT</span> && <span class="variable">isUndefined</span>(<span class="variable">value</span>))
+      <span class="variable">value</span> = <span class="this">this</span>.<span class="variable">defaults</span>;
+
+    <span class="keyword">if</span> (!<span class="this">this</span>.<span class="variable">isValid</span>(<span class="variable">value</span>))
+      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="this">this</span>.<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{name}}"</span>, <span class="variable">name</span>).
+                                       <span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>).
+                                       <span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
+
+    <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">validate</span>(<span class="variable">value</span>, <span class="variable">name</span>);
+  },
+  <span class="variable">defaults</span>: <span class="class">NO_DEFAULT</span>,</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Default error <code>message</code> used to by <code>TypeError</code> thrown when invalid value
+is used.
+   </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">message</span>: <span class="string">"Unexpected value: `{{value}}`"</span>,
+  <span class="variable">isValid</span>: <span class="keyword">function</span> <span class="variable">isValid</span>(<span class="variable">value</span>) {
+    <span class="keyword">return</span> <span class="variable">true</span>;
+  },</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>   </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">validate</span>: <span class="keyword">function</span> <span class="variable">validate</span>(<span class="variable">value</span>, <span class="variable">name</span>) {
+    <span class="keyword">return</span> <span class="variable">value</span>;
+  }
+});
+<span class="class">Guard</span>.<span class="variable">isGuard</span> = <span class="variable">true</span>;
+<span class="variable">exports</span>.<span class="class">Guard</span> = <span class="class">Guard</span>;</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -204,26 +277,10 @@ are going to be replaced with an actual <code>value</code> and it's type.</p></l
 <p> </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">exports</span>.<span class="class">Function</span> = <span class="keyword">function</span> <span class="class">Function</span>(<span class="variable">defaultValue</span>, <span class="variable">message</span>) {
-  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Function expected instead of {{type}} `{{value}}`"</span>;
-
-  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">FunctionG</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
-    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
-    <span class="comment">// falling back to the `defaultValue`.</span>
-    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
-      <span class="variable">value</span> = <span class="variable">defaultValue</span>;
-    <span class="comment">// If `value` is defined and it's not a function `TypeError` is thrown with</span>
-    <span class="comment">// a desired message.</span>
-    <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="variable">isFunction</span>(<span class="variable">value</span>))
-      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
-
-    <span class="comment">// If error was not thrown the `value` passed a guard successfully and it</span>
-    <span class="comment">// can be returned.</span>
-    <span class="keyword">return</span> <span class="variable">value</span>;
-  }
-};</code></pre>
+<pre><code><span class="variable">exports</span>.<span class="class">Function</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
+  <span class="variable">isValid</span>: <span class="variable">isFunction</span>,
+  <span class="variable">message</span>: <span class="string">"Function expected instead of {{type}} `{{value}}`"</span>
+});</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -269,29 +326,10 @@ are going to be replaced with an actual <code>value</code> and it's type.</p></l
 <p> </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">exports</span>.<span class="class">String</span> = <span class="keyword">function</span> <span class="class">String</span>(<span class="variable">defaultValue</span>, <span class="variable">message</span>) {
-  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
-  <span class="comment">// built-in one.</span>
-  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"String expected instead of {{type}} `{{value}}`"</span>;
-
-  <span class="comment">// Generating a guard function.</span>
-  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GString</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
-    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
-    <span class="comment">// falling back to the `defaultValue`.</span>
-    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
-      <span class="variable">value</span> = <span class="variable">defaultValue</span>;
-    <span class="comment">// If `value` is defined and it's not a string `TypeError` is thrown with</span>
-    <span class="comment">// a desired message.</span>
-    <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="variable">isString</span>(<span class="variable">value</span>))
-      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
-
-    <span class="comment">// If error was not thrown the `value` passed a guard successfully and it</span>
-    <span class="comment">// can be returned.</span>
-    <span class="keyword">return</span> <span class="variable">value</span>;
-  }
-};</code></pre>
+<pre><code><span class="variable">exports</span>.<span class="class">String</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
+  <span class="variable">isValid</span>: <span class="variable">isString</span>,
+  <span class="variable">message</span>: <span class="string">"String expected instead of {{type}} `{{value}}`"</span>
+});</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -316,49 +354,41 @@ are going to be replaced with an actual <code>value</code> and it's type.</p></l
 
 <h2>examples</h2>
 
-<pre><code> var guards = require("guards");
- var gLength = guards.Number(0);
+<pre><code> var guards = require("guards")
+ var Length = guards.Number.extend({ defaults: 0 })
 
- var length1 = gLength();
+ Length()
  // 0
 
- var length2 = gLength(17);
+ Length(17)
  // 17
 
- var length3 = gLength("7");
+ Length("7")
  // TypeError: Number expected instead of string `7`
 
- var gCount = guards.Number(0, "number expected not a {{type}}");
+ var Count = guards.Number.extend({
+   defaults: 0,
+   message: "number expected not a {{type}}"
+ });
 
- var count = gCount({ value: 4 });
+ Count({ value: 4 });
  // TypeError: number expected not a object</code></pre>
 
 <p> </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">exports</span>.<span class="class">Number</span> = <span class="keyword">function</span> <span class="class">Number</span>(<span class="variable">defaultValue</span>, <span class="variable">message</span>) {
-  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
-  <span class="comment">// built-in one.</span>
-  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Number expected instead of {{type}} `{{value}}`"</span>;
-
-  <span class="comment">// Generating a guard function.</span>
-  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GNumber</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
-    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
-    <span class="comment">// falling back to the `defaultValue`.</span>
-    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
-      <span class="variable">value</span> = <span class="variable">defaultValue</span>;
-    <span class="comment">// If `value` is defined and it's not a number `TypeError` is thrown with</span>
-    <span class="comment">// a desired message.</span>
-    <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="variable">isNumber</span>(<span class="variable">value</span>))
-     <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
-
-    <span class="comment">// If error was not thrown the `value` passed a guard successfully and it</span>
-    <span class="comment">// can be returned.</span>
-    <span class="keyword">return</span> <span class="variable">value</span>;
-  }
-};</code></pre>
+<pre><code><span class="variable">exports</span>.<span class="class">Number</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
+  <span class="variable">isValid</span>: <span class="variable">isNumber</span>,
+  <span class="variable">message</span>: <span class="string">"Number expected instead of {{type}} `{{value}}`"</span>
+});
+<span class="variable">exports</span>.<span class="class">Boolean</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
+  <span class="variable">isValid</span>: <span class="variable">isBoolean</span>,
+  <span class="variable">message</span>: <span class="string">"Boolean expected instead of {{type}} `{{value}}`"</span>
+});
+<span class="variable">exports</span>.<span class="class">Null</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
+  <span class="variable">isValid</span>: <span class="variable">isNull</span>,
+  <span class="variable">message</span>: <span class="string">"Boolean expected instead of {{type}} `{{value}}`"</span>
+});</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -391,62 +421,49 @@ an actual <code>value</code> and it's type.</p></li></ul>
 <h2>Examples</h2>
 
 <pre><code> var guards = require("guards");
- var Point = guards.Schema({
-   x: guards.Number(0),
-   y: guards.Number(0)
- });
+ var Point = guards.Schema.extend({
+   x: guards.Number.extend({ defaults: 0 }),
+   y: guards.Number.extend({ defaults: 0 })
+ })
 
- var p1 = Point();
+ new Point
  // { x: 0, y: 0 }
 
- var p2 = Point({ x: 17, z: 50 });
+ Point({ x: 17, z: 50 })
  // { x: 17, y: 0 }
 
- var p3 = Point({ x: "5" });
+ Point({ x: "5" })
  // TypeError: Number expected instead of string `5`
 
- var p4 = Point("{ y: 6 }");
+ Point("{ y: 6 }")
  // TypeError: Object expected instead of string `{ y: 6 }`
 
 
- var Segment = guards.Schema({
+ var Segment = guards.Schema.extend({
    start: Point,
    end: Point,
-   opacity: guards.Number(1)
- });
+   opacity: guards.Number.extend({ defaults: 1 })
+ })
 
- var s1 = Segment();
+ new Segment
  // { start: { x: 0, y: 0 }, end: { x: 0, y: 0 }, opacity: 1 }
 
- var s2 = Segment({ end: { x: 17 }, opacity: 0.5 });
+ Segment({ end: { x: 17 }, opacity: 0.5 })
  // { start: { x: 0, y: 0 }, end: { x: 17, y: 0 }, opacity: 0.5 }
 
- var s3 = Segment({ start: 17 });
+ Segment({ start: 17 });
  // TypeError: Object expected instead of number `17`</code></pre>
 
 <p> </p>
 </td>
 <td class="code">
-<pre><code><span class="keyword">var</span> <span class="class">Schema</span> = <span class="variable">exports</span>.<span class="class">Schema</span> = <span class="keyword">function</span> <span class="class">Schema</span>(<span class="variable">descriptor</span>, <span class="variable">message</span>) {
-  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
-  <span class="comment">// built-in one.</span>
-  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Object expected instead of {{type}} `{{value}}`"</span>;
-
-  <span class="comment">// If `descriptor` is a function then we assume it's a guard so we return it</span>
-  <span class="comment">// immediately, otherwise we generate a guard function from it.</span>
-  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GSchema</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
-    <span class="keyword">var</span> <span class="variable">data</span>;
-    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
-    <span class="comment">// falling back to the `{}`.</span>
-    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
-      <span class="variable">value</span> = {};
-    <span class="comment">// Since schema defines object structure guard accepts only object `value`s</span>
-    <span class="comment">// if given `value` is not an object we throw `TypeError` with a desired</span>
-    <span class="comment">// message.</span>
-    <span class="keyword">if</span> (!<span class="variable">isObject</span>(<span class="variable">value</span>) || <span class="variable">isArray</span>(<span class="variable">value</span>))
-      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
+<pre><code><span class="keyword">var</span> <span class="class">Schema</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
+  <span class="variable">message</span>: <span class="string">"Object expected instead of {{type}} `{{value}}`"</span>,
+  <span class="variable">isValid</span>: <span class="keyword">function</span> <span class="variable">isValid</span>(<span class="variable">value</span>, <span class="variable">name</span>) {
+    <span class="keyword">return</span> <span class="variable">isUndefined</span>(<span class="variable">value</span>) || (<span class="variable">isObject</span>(<span class="variable">value</span>) && !<span class="variable">isArray</span>(<span class="variable">value</span>));
+  },
+  <span class="variable">validate</span>: <span class="keyword">function</span> <span class="variable">validate</span>(<span class="variable">value</span>, <span class="variable">name</span>) {
+    <span class="variable">value</span> = <span class="variable">value</span> || {};
 
     <span class="comment">// At this point we have an object `value` containing properties that must</span>
     <span class="comment">// be verified by guards of the `descriptor` to make sure that `value` has</span>
@@ -455,11 +472,11 @@ an actual <code>value</code> and it's type.</p></li></ul>
     <span class="comment">// that represents verified and normalized value. If any of the property</span>
     <span class="comment">// guards will throw an exception it will propagate to a caller of this</span>
     <span class="comment">// guard notifying it that given `value` does not has desired schema.</span>
-    <span class="variable">data</span> = {};
-    <span class="class">Object</span>.<span class="variable">keys</span>(<span class="variable">descriptor</span>).<span class="variable">forEach</span>(<span class="keyword">function</span>(<span class="variable">key</span>) {
-      <span class="keyword">var</span> <span class="variable">guard</span> = <span class="variable">descriptor</span>[<span class="variable">key</span>];
-      <span class="variable">data</span>[<span class="variable">key</span>] = <span class="variable">guard</span>(<span class="variable">value</span>[<span class="variable">key</span>], <span class="variable">key</span>);
-    }, <span class="this">this</span>);
+    <span class="keyword">var</span> <span class="variable">data</span> = {};
+    <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable">key</span> <span class="keyword">in</span> <span class="this">this</span>) {
+      <span class="keyword">if</span> (<span class="this">this</span>[<span class="variable">key</span>].<span class="variable">isGuard</span>)
+        <span class="variable">data</span>[<span class="variable">key</span>] = <span class="this">this</span>[<span class="variable">key</span>](<span class="variable">value</span>[<span class="variable">key</span>], <span class="variable">name</span>);
+    }
 
     <span class="comment">// If error was not thrown the `value` has a schema described by</span>
     <span class="comment">// a `descriptor`. In such case we return map of the values properties</span>
@@ -467,8 +484,9 @@ an actual <code>value</code> and it's type.</p></li></ul>
     <span class="comment">// for certain properties or may contain extra properties that have to</span>
     <span class="comment">// be dropped).</span>
     <span class="keyword">return</span> <span class="variable">data</span>;
-  };
-};</code></pre>
+  }
+});
+<span class="variable">exports</span>.<span class="class">Schema</span> = <span class="class">Schema</span>;</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -491,60 +509,51 @@ an actual <code>value</code> and it's type.</p></li></ul>
 
 <h2>Examples</h2>
 
-<pre><code> var guards = require("guards");
- var Words = guards.Array(guards.String(""));
+<pre><code> var guards = require("guards")
+ var Words = guards.Array.extend([
+   guards.String.extend({ defaults: "" })
+ ])
 
- var ww1 = Words([ "foo", "bar" ]);
+ Words([ "foo", "bar" ])
  // [ 'foo', 'bar' ]
 
- var ww2 = Words([ "foo", 9 ]);
+ Words([ "foo", 9 ])
  // TypeError: String expected instead of number `9`
 
- var Point = guards.Schema({
-   x: guards.Number(0),
-   y: guards.Number(0)
- });
- var Points = guards.Array(Point);
+ var Point = guards.Schema.extend({
+   x: guards.Number.extend({ defaults: 0 }),
+   y: guards.Number.extend({ defaults: 0 })
+ })
+ var Points = guards.Array.extend([ Point ])
 
- var pp1 = Points([{}, { x: 2, y: 8 }]);
+ new Points([{}, { x: 2, y: 8 }])
  // [ { x: 0, y: 0 }, { x: 2, y: 8 } ]
 
- var pp2 = Points({ x: 2, y: 8 });
+ Points({ x: 2, y: 8 })
  // TypeError: Array expected instead of object `[object Object]`
 
 
- var Graph = guards.Array(Points);
+ var Graph = guards.Array.extend([ Points ])
 
- var g1 = Graph([]);
+ new Graph
  // []
 
- var g2 = Graph([
+ Graph([
    [{ x: 17, foo: "bar" }, { x: 16 }],
    [{ y: 4 }],
    []
- ]);
+ ])
  // [ [ { x: 17, y: 0 }, { x: 16, y: 0 } ], [ { x: 0, y: 4 } ], [] ]</code></pre>
 
 <p> </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">exports</span>.<span class="class">Array</span> = <span class="keyword">function</span> <span class="class">Array</span>(<span class="variable">guard</span>, <span class="variable">message</span>) {
-  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
-  <span class="comment">// built-in one.</span>
-  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Array expected instead of {{type}} `{{value}}`"</span>;
-
-  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GArray</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
-    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
-    <span class="comment">// falling back to the `[]`.</span>
-    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
-      <span class="variable">value</span> = [];
-    <span class="comment">// Since guard validates elements of the array given `value` must be an</span>
-    <span class="comment">// array we throw `TypeError` if this is not the case.</span>
-    <span class="keyword">if</span> (!<span class="variable">isArray</span>(<span class="variable">value</span>))
-      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
-
+<pre><code><span class="keyword">var</span> <span class="class">Array</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
+  <span class="variable">message</span>: <span class="string">"Array expected instead of {{type}} `{{value}}`"</span>,
+  <span class="variable">isValid</span>: <span class="keyword">function</span> <span class="variable">isValid</span>(<span class="variable">value</span>) {
+    <span class="keyword">return</span> <span class="variable">isArray</span>(<span class="variable">value</span>) || <span class="variable">isUndefined</span>(<span class="variable">value</span>);
+  },
+  <span class="variable">validate</span>: <span class="keyword">function</span> <span class="variable">validate</span>(<span class="variable">value</span>, <span class="variable">name</span>) {
     <span class="comment">// At this point we have an array `value` containing properties that must</span>
     <span class="comment">// be verified by a desired `guard`. As result we return mapped array</span>
     <span class="comment">// containing guarded values of the given array. Please note that we need</span>
@@ -553,11 +562,13 @@ an actual <code>value</code> and it's type.</p></li></ul>
     <span class="comment">// does not passes validation guard will throw `TypeError` and it will</span>
     <span class="comment">// propagate to a caller of this guard notifying it that `value` does not</span>
     <span class="comment">// validates.</span>
+    <span class="variable">value</span> = <span class="variable">value</span> || [];
     <span class="keyword">return</span> <span class="variable">value</span>.<span class="variable">map</span>(<span class="keyword">function</span>(<span class="variable">value</span>, <span class="variable">index</span>) {
-      <span class="keyword">return</span> <span class="variable">guard</span>(<span class="variable">value</span>, <span class="variable">index</span>);
+      <span class="keyword">return</span> <span class="this">this</span>[<span class="number integer">0</span>](<span class="variable">value</span>, <span class="variable">index</span>);
     }, <span class="this">this</span>);
-  };
-};</code></pre>
+  }
+});
+<span class="variable">exports</span>.<span class="class">Array</span> = <span class="class">Array</span>;</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -629,23 +640,12 @@ an actual <code>value</code> and it's type.</p></li></ul>
 <p> </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">exports</span>.<span class="class">Tuple</span> = <span class="keyword">function</span> <span class="class">Tuple</span>(<span class="variable">guards</span>, <span class="variable">message</span>) {
-  <span class="comment">// If optional error `message` template is not provided falling back to the</span>
-  <span class="comment">// built-in one.</span>
-  <span class="variable">message</span> = <span class="variable">message</span> || <span class="string">"Array expected instead of {{type}} `{{value}}`"</span>;
-
-  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GTuple</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
-    <span class="comment">// If `value` is `undefined` (which may mean that it was not provided)</span>
-    <span class="comment">// falling back to the `[]`.</span>
-    <span class="keyword">if</span> (<span class="variable">isUndefined</span>(<span class="variable">value</span>))
-      <span class="variable">value</span> = [];
-    <span class="comment">// Since guard validates elements of the array given `value` must be an</span>
-    <span class="comment">// array we throw `TypeError` if this is not the case.</span>
-    <span class="keyword">if</span> (!<span class="variable">isArray</span>(<span class="variable">value</span>))
-      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{key}}"</span>, <span class="variable">key</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>)
-                                 .<span class="variable">replace</span>(<span class="string">"{{type}}"</span>, <span class="keyword">typeof</span> <span class="variable">value</span>));
-
+<pre><code><span class="keyword">var</span> <span class="class">Tuple</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
+  <span class="variable">message</span>: <span class="string">"Array expected instead of {{type}} `{{value}}`"</span>,
+  <span class="variable">isValid</span>: <span class="keyword">function</span> <span class="variable">isValid</span>(<span class="variable">value</span>) {
+    <span class="keyword">return</span> <span class="variable">isArray</span>(<span class="variable">value</span>) || <span class="variable">isUndefined</span>(<span class="variable">value</span>);
+  },
+  <span class="variable">validate</span>: <span class="keyword">function</span> <span class="variable">validate</span>(<span class="variable">value</span>, <span class="variable">name</span>) {
     <span class="comment">// At this point we have an array `value` containing properties that must</span>
     <span class="comment">// be verified by a guards in the `descriptor`. As result we return mapped</span>
     <span class="comment">// array containing guarded values of the given array. Please note that we</span>
@@ -655,11 +655,16 @@ an actual <code>value</code> and it's type.</p></li></ul>
     <span class="comment">// stripped off. If any element won't pass validation, responsible guard</span>
     <span class="comment">// will throw `TypeError` and it will propagate to a caller of this guard</span>
     <span class="comment">// notifying it that `value` does not validates.</span>
-    <span class="keyword">return</span> <span class="variable">guards</span>.<span class="variable">map</span>(<span class="keyword">function</span>(<span class="variable">guard</span>, <span class="variable">index</span>) {
-      <span class="keyword">return</span> <span class="variable">guard</span>(<span class="variable">value</span>[<span class="variable">index</span>], <span class="variable">index</span>);
-    }, <span class="this">this</span>);
-  };
-};</code></pre>
+    <span class="variable">value</span> = <span class="variable">value</span> || [];
+    <span class="keyword">var</span> <span class="variable">data</span> = [];
+    <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable">key</span> <span class="keyword">in</span> <span class="this">this</span>) {
+      <span class="keyword">if</span> (<span class="this">this</span>[<span class="variable">key</span>].<span class="variable">isGuard</span>)
+        <span class="variable">data</span>[<span class="variable">key</span>] = <span class="this">this</span>[<span class="variable">key</span>](<span class="variable">value</span>[<span class="variable">key</span>], <span class="variable">name</span>);
+    }
+    <span class="keyword">return</span> <span class="variable">data</span>;
+  }
+});
+<span class="variable">exports</span>.<span class="class">Tuple</span> = <span class="class">Tuple</span>;</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -680,16 +685,16 @@ as result, unless non will validate in which case <code>TypeError</code> is thro
 
 <h2>Examples</h2>
 
-<pre><code> var guards = require("guards");
- var ObjectPoint = guards.Schema({
-   x: guards.Number(0),
-   y: guards.Number(0)
- });
- var ArrayPoint = guards.Tuple([
-   guards.Number(0),
-   guards.Number(0)
- ]);
- var Point = guards.AnyOf(ObjectPoint, ArrayPoint);
+<pre><code> var guards = require("guards")
+ var ObjectPoint = guards.Schema.extend({
+   x: guards.Number.extend({ defaults: 0 }),
+   y: guards.Number.extend({ defaults: 0 })
+ })
+ var ArrayPoint = guards.Tuple.extend([
+   guards.Number.extend({ defaults: 0 }),
+   guards.Number.extend({ defaults: 0 })
+ ])
+ var Point = guards.AnyOf.extend([ ObjectPoint, ArrayPoint ]);
 
  Point([ 1 ])
  // [ 1, 0 ]
@@ -703,24 +708,28 @@ as result, unless non will validate in which case <code>TypeError</code> is thro
 <p> </p>
 </td>
 <td class="code">
-<pre><code><span class="variable">exports</span>.<span class="class">AnyOf</span> = <span class="keyword">function</span> <span class="class">AnyOf</span>() {
+<pre><code><span class="keyword">var</span> <span class="class">AnyOf</span> = <span class="class">Guard</span>.<span class="variable">extend</span>({
   <span class="comment">// Template of error `message` that will be thrown if incorrect `value` is</span>
   <span class="comment">// passed to it.</span>
-  <span class="keyword">var</span> <span class="variable">message</span> = <span class="string">"Passed value: `{{value}}` has invalid type or structure"</span>;
+  <span class="variable">message</span>: <span class="string">"Passed value: `{{value}}` has invalid type or structure"</span>,
   <span class="comment">// Saving array of the value guards.</span>
-  <span class="keyword">var</span> <span class="variable">guards</span> = <span class="class">Array</span>.<span class="variable">prototype</span>.<span class="variable">slice</span>.<span class="variable">call</span>(<span class="variable">arguments</span>);
-  <span class="keyword">return</span> <span class="keyword">function</span> <span class="class">GAnyOf</span>(<span class="variable">value</span>, <span class="variable">key</span>) {
+  <span class="variable">validate</span>: <span class="keyword">function</span> <span class="variable">validate</span>(<span class="variable">value</span>, <span class="variable">name</span>) {
     <span class="comment">// We try to return `value` that passes at least on validation, by trying</span>
     <span class="comment">// to validate it with each guard.</span>
-    <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable">i</span> = <span class="number integer">0</span>, <span class="variable">ii</span> = <span class="variable">guards</span>.<span class="variable">length</span>; <span class="variable">i</span> < <span class="variable">ii</span>; <span class="variable">i</span>++)
-      <span class="keyword">try</span> { <span class="keyword">return</span> <span class="variable">guards</span>[<span class="variable">i</span>](<span class="variable">value</span>, <span class="variable">key</span>); } <span class="keyword">catch</span>(<span class="variable">e</span>) {}
+    <span class="keyword">for</span> (<span class="keyword">var</span> <span class="variable">key</span> <span class="keyword">in</span> <span class="this">this</span>) {
+      <span class="keyword">if</span> (<span class="this">this</span>[<span class="variable">key</span>].<span class="variable">isGuard</span>)
+        <span class="keyword">try</span> { <span class="keyword">return</span> <span class="this">this</span>[<span class="variable">key</span>](<span class="variable">value</span>, <span class="variable">name</span>); } <span class="keyword">catch</span>(<span class="variable">error</span>) {}
+    }
+
     <span class="comment">// If got this far then non of the validations succeeded as value was not</span>
     <span class="comment">// returned, so we throw a `TypeError` that will propagate to a caller of</span>
     <span class="comment">// this guard notifying it that `value` does not validates.</span>
-    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>));
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">TypeError</span>(<span class="this">this</span>.<span class="variable">message</span>.<span class="variable">replace</span>(<span class="string">"{{value}}"</span>, <span class="variable">value</span>));
   }
-};
+});
+<span class="variable">exports</span>.<span class="class">AnyOf</span> = <span class="class">AnyOf</span>;
 
+});
 </code></pre>
 </td>
 </tr>	</body>
