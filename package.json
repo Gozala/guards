@@ -1,7 +1,7 @@
 {
   "name": "guards",
   "id": "guards",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Data type & structure checking, runtime analog of types",
   "homepage": "http://jeditoolkit.com/guards/docs/",
   "keywords": [ "guards", "structures", "structs", "types" ],
