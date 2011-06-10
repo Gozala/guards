@@ -5,17 +5,16 @@
 
 (typeof define !== "function" ? function($){ $(require, exports, module); } : define)(function(require, exports, module, undefined) {
 
-var utils = require("./type");
-var Extendable = require("./extendables").Extendable;
-var isArray = utils.isArray;
-var isFunction = utils.isFunction;
-var isUndefined = utils.isUndefined;
-var isNull = utils.isNull;
-var isNumber = utils.isNumber;
-var isString = utils.isString;
-var isObject = utils.isObject;
-var isBoolean = utils.isBoolean;
-var owns = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
+var Extendable = require("https!raw.github.com/Gozala/extendables/v0.2.0/extendables.js").Extendable;
+var checks = require('https!raw.github.com/Gozala/type/v0.0.1/checks.js');
+var isArray = checks.isArray;
+var isFunction = checks.isFunction;
+var isUndefined = checks.isUndefined;
+var isNull = checks.isNull;
+var isNumber = checks.isNumber;
+var isString = checks.isString;
+var isObject = checks.isObject;
+var isBoolean = checks.isBoolean;
 
 function getOwnPropertyDescriptors(object) {
   var descriptors = {};
@@ -92,6 +91,12 @@ var Guard = Extendable.extend({
 Guard.isGuard = true;
 exports.Guard = Guard;
 
+function Guard(options) {
+  return function guard(value, name) {
+    if (options.defaults !== NO_DEFAULT && isUndefined(value))
+      value = options.defaults
+  }
+}
 /*
  * # Function #
  *
@@ -163,7 +168,7 @@ exports.Function = Guard.extend({
  *
  *      var guards = require("guards");
  *
- *      var gUser = guards.String("Anonymous");
+ *      var gUser = guards.String.extend({ defaults: "Anonymous" });
  *
  *      var user1 = gUser("Jack");
  *      // "Jack"
@@ -174,7 +179,10 @@ exports.Function = Guard.extend({
  *      var user3 = gUser(7);
  *      // TypeError: String expected instead of number `7`
  *
- *      var gHi = guards.String("Hi", "string expected not a {{type}}");
+ *      var gHi = guards.String.extend({
+ *        defaults: "Hi",
+ *        message: "string expected not a {{type}}"
+ *      });
  *
  *      var msg = gHi(function() {});
  *      // TypeError: string expected not a function
@@ -320,7 +328,7 @@ var Schema = Guard.extend({
     // guard notifying it that given `value` does not has desired schema.
     var data = {};
     for (var key in this) {
-      if (this[key].isGuard)
+      if (this[key].isGuard && this[key] !== this.constructor)
         data[key] = this[key](value[key], name);
     }
 
@@ -496,7 +504,7 @@ var Tuple = Guard.extend({
     value = value || [];
     var data = [];
     for (var key in this) {
-      if (this[key].isGuard)
+      if (this[key].isGuard && this[key] !== this.constructor)
         data[key] = this[key](value[key], name);
     }
     return data;
@@ -550,7 +558,7 @@ var AnyOf = Guard.extend({
     // We try to return `value` that passes at least on validation, by trying
     // to validate it with each guard.
     for (var key in this) {
-      if (this[key].isGuard)
+      if (this[key].isGuard && this[key] !== this.constructor)
         try { return this[key](value, name); } catch(error) {}
     }
 
