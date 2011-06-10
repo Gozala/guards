@@ -4,33 +4,29 @@
   "version": "0.1.0",
   "description": "Data type & structure checking, runtime analog of types",
   "homepage": "http://jeditoolkit.com/guards/docs/",
-  "keywords": [ "guards", "structures" ],
-  "contributors": ["Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)"],
+  "keywords": [ "guards", "structures", "structs", "types" ],
+  "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Gozala/guards.git"
+    "url": "https://github.com/Gozala/guards.git",
+    "web": "https://github.com/Gozala/guards"
   },
   "bugs": {
     "web": "http://github.com/Gozala/guards/issues/"
-  },
-  "directories": {
-    "doc": "./docs",
-    "lib": "./lib",
-    "test": "./test"
   },
   "devDependencies": {
     "test": ">=0.0.10"
   },
   "dependencies": {
-    "extendables": "0.1.2"
+    "graphquire": ">=0.6.0"
   },
-  "main": "./lib/guards.js",
+  "main": "./guards.js",
   "scripts": {
-    "test": "node test/test-all.js"
+    "test": "node tests/test-guards.js",
+    "install": "graphquire --clean --write"
   },
   "engines": {
-    "node": ">=0.1.103",
-    "teleport": ">=0.2.0"
+    "node": "0.4.x"
   },
   "licenses": [{
     "type": "MIT",
