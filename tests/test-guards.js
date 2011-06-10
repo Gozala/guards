@@ -1,5 +1,5 @@
 /* vim:set ts=2 sw=2 sts=2 expandtab */
-/*jshint newcap: true undef: true es5: true node: true devel: true
+/*jshint undef: true es5: true node: true devel: true
          forin: true */
 /*global define: true */
 
@@ -10,7 +10,7 @@
 var guards = require("../guards.js");
 
 exports["test string guard"] = function(assert) {
-  var g1 = guards.String.extend({ defaults: "default" });
+  var g1 = guards.String("default");
   assert.equal(g1(), "default", "correct default value is assigned");
   assert.equal(g1("foo"), "foo", "string guard accepts string values");
   assert.throws(function() {
@@ -20,12 +20,12 @@ exports["test string guard"] = function(assert) {
     g1(new String("foo bar"));
   }, /String/, "String instance throws exception as well");
 
-  var g2 = guards.String;
+  var g2 = guards.String();
   assert.throws(function() {
     g2();
   }, /String/, "no default value is given");
 
-  var g3 = guards.String.extend({ message: "Boom -> {{value}}!" });
+  var g3 = guards.String(undefined, "Boom -> {{value}}!");
   assert.throws(function() {
     var value = g3({});
   }, /Boom \-\> \[object Object\]!/g, "Optional error temaplate can be used");
@@ -36,33 +36,31 @@ exports["test string guard"] = function(assert) {
 };
 
 exports["test number guard"] = function(assert) {
-  assert.equal(guards.Number(12), 12, "numbers work just fine");
+  var g1 = guards.Number();
+  assert.equal(g1(12), 12, "numbers work just fine");
   assert.throws(function() {
-    guards.Number('12');
+    g1('12');
   }, /Number/, "non-number throws");
   assert.throws(function() {
-    guards.Number();
+    g1();
   }, /Number/, "undefined throws without defaults attribute");
-  var g1 = guards.Number.extend({ defaults: 0 });
-  assert.equal(g1(), 0, "correct default value is assigned");
-  assert.equal(g1(17), 17, "string guard accepts string values");
+  var g2 = guards.Number(0);
+  assert.equal(g2(), 0, "correct default value is assigned");
+  assert.equal(g2(17), 17, "string guard accepts string values");
   assert.throws(function() {
-    g1("12");
+    g2("12");
   }, /Number/g, "non-number throws a TypeError");
 
-  var g2 = guards.Number.extend({
-    defaults: 0,
-    message: "number expected not a {{type}}"
-  });
+  var g3 = guards.Number(0, "number expected not a {{type}}");
   assert.throws(function() {
-    g2("boom!");
+    g3("boom!");
   }, /number expected not a string/g, "Optional error temaplate can be used");
 };
 
 exports["test schema guard"] = function(assert) {
-  var Point = guards.Schema.extend({
-    x: guards.Number.extend({ defaults: 0 }),
-    y: guards.Number.extend({ defaults: 0 })
+  var Point = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
   });
 
   assert.deepEqual(Point(), { x: 0, y: 0 }, "default values are insterted");
@@ -77,10 +75,10 @@ exports["test schema guard"] = function(assert) {
   }, /Object/g, "Scheme guard throws on non-object values");
 
 
-  var Segment = guards.Schema.extend({
+  var Segment = guards.Schema({
     start: Point,
     end: Point,
-    opacity: guards.Number.extend({ defaults: 1 })
+    opacity: guards.Number(1)
   });
 
   assert.deepEqual(Segment(),
@@ -97,7 +95,19 @@ exports["test schema guard"] = function(assert) {
 };
 
 exports["test array guard"] = function(assert) {
-  var Words = guards.Array.extend([ guards.String.extend({ defaults: "" }) ]);
+  var array = guards.Array();
+  assert.deepEqual(array([ 1, 2, 3 ]), [ 1, 2, 3 ], "array returned");
+  assert.throws(function() {
+    array(1, 2, 3);
+  }, /Array/, "throw because non-array passed");
+
+  var arraymsg = guards.Array(undefined, "Boom!");
+  assert.deepEqual(array([ 1, 2, 3 ]), [ 1, 2, 3 ], "array returned");
+  assert.throws(function() {
+    arraymsg(1, 2, 3);
+  }, /Boom/, "throw because non-array passed");
+
+  var Words = guards.Array(guards.String(''));
 
   assert.deepEqual(Words([]), [], "Empty array passes through");
   assert.deepEqual(Words([ "foo", "bar" ]), [ "foo", "bar" ],
@@ -107,11 +117,11 @@ exports["test array guard"] = function(assert) {
     Words([ "foo", 9 ]);
   }, /String/g, "throw because it got number instead of string");
 
-  var Point = guards.Schema.extend({
-    x: guards.Number.extend({ defaults: 0 }),
-    y: guards.Number.extend({ defaults: 0 })
+  var Point = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
   });
-  var Points = guards.Array.extend([ Point ]);
+  var Points = guards.Array(Point);
 
   assert.deepEqual(Points([{ foo: 'bar' }, { x: 2, y: 8 }]),
                    [ { x: 0, y: 0 }, { x: 2, y: 8 } ],
@@ -122,7 +132,7 @@ exports["test array guard"] = function(assert) {
   }, /Array/g, "TypeError is thrown if value is not an array");
 
 
-  var Graph = guards.Array.extend([ Points ]);
+  var Graph = guards.Array(Points);
 
   assert.deepEqual(Graph([]), [], "empty array passes through");
   assert.deepEqual(Graph([
@@ -140,16 +150,16 @@ exports["test array guard"] = function(assert) {
 
 exports["test tuple guards"] = function(assert) {
   var guards = require("../guards.js");
-  var Point = guards.Schema.extend({
-    x: guards.Number.extend({ defaults: 0 }),
-    y: guards.Number.extend({ defaults: 0 })
+  var Point = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
   });
-  var Segment = guards.Schema.extend({
+  var Segment = guards.Schema({
     start: Point,
     end: Point,
-    opacity: guards.Number.extend({ defaults: 1 })
+    opacity: guards.Number(1)
   });
-  var Triangle = guards.Tuple.extend([ Segment, Segment, Segment ]);
+  var Triangle = guards.Tuple([ Segment, Segment, Segment ]);
 
   assert.deepEqual(Triangle(),
                   [
@@ -179,7 +189,7 @@ exports["test tuple guards"] = function(assert) {
     }, /Number/g, "Nested guard throws if wrong `value` is passed");
 
 
-    var Pointer = guards.Tuple.extend([ Point, Segment ]);
+    var Pointer = guards.Tuple([ Point, Segment ]);
 
     assert.deepEqual(Pointer(),
                     [
@@ -205,19 +215,17 @@ exports["test tuple guards"] = function(assert) {
 };
 
 exports["test custom guards"] = function(assert) {
-  var Point = guards.Schema.extend({
-    x: guards.Number.extend({ defaults: 0 }),
-    y: guards.Number.extend({ defaults: 0 })
+  var Point = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
   });
-  var color = guards.Guard.extend({
-    validate: function color(value) {
-      if (typeof value === "number" && value <= 255 && value >= 0)
-        return value
-      throw new TypeError("Color is a number between 0 and 255");
-    }
-  });
-  var RGB = guards.Tuple.extend([ color, color, color ]);
-  var Segment = guards.Schema.extend({
+  function color(value) {
+    if (typeof value === "number" && value <= 255 && value >= 0)
+      return value
+    throw new TypeError("Color is a number between 0 and 255");
+  }
+  var RGB = guards.Tuple([ color, color, color ]);
+  var Segment = guards.Schema({
     start: Point,
     end: Point,
     color: RGB,
@@ -243,15 +251,12 @@ exports["test custom guards"] = function(assert) {
 
 exports["test AnyOf guards"] = function(assert) {
   var guards = require("../guards.js");
-  var ObjectPoint = guards.Schema.extend({
-    x: guards.Number.extend({ defaults: 0 }),
-    y: guards.Number.extend({ defaults: 0 })
+  var ObjectPoint = guards.Schema({
+    x: guards.Number(0),
+    y: guards.Number(0)
   });
-  var ArrayPoint = guards.Tuple.extend([
-    guards.Number.extend({ defaults: 0 }),
-    guards.Number.extend({ defaults: 0 })
-  ]);
-  var Point = guards.AnyOf.extend([ ObjectPoint, ArrayPoint ]);
+  var ArrayPoint = guards.Tuple([ guards.Number(0), guards.Number(0) ]);
+  var Point = guards.AnyOf([ ObjectPoint, ArrayPoint ]);
 
   assert.deepEqual(Point([ 1 ]), [ 1, 0 ], "ArrayPoint validates");
   assert.deepEqual(Point({ y: 15 }), { x: 0, y: 15 }, "ObjectPoint validates");
@@ -262,7 +267,7 @@ exports["test AnyOf guards"] = function(assert) {
 
 exports["test function guards"] = function(assert) {
   var guards = require("../guards.js");
-  var Callee = guards.Function.extend({ defaults: "Anonymous" });
+  var Callee = guards.Function();
   var f1 = function () { return "hello world" }
 
   assert.equal(Callee(Object), Object, "Object validates");
@@ -271,10 +276,7 @@ exports["test function guards"] = function(assert) {
     Callee(7);
   }, /Function expected/, "Number does not validates as Function");
   assert.throws(function() {
-    var Callee2 = guards.Function.extend({
-      defaults: "Hi",
-      message: "{{type}} is not a function."
-    });
+    var Callee2 = guards.Function(undefined, "{{type}} is not a function.");
     Callee2({});
   }, /object is not a function/, "custom error message is thrown");
 };
