@@ -17,13 +17,9 @@
   "devDependencies": {
     "test": ">=0.0.10"
   },
-  "dependencies": {
-    "graphquire": ">=0.6.0"
-  },
   "main": "./guards.js",
   "scripts": {
-    "test": "node tests/test-guards.js",
-    "install": "graphquire --clean --write"
+    "test": "node tests/test-guards.js"
   },
   "engines": {
     "node": "0.4.x"
