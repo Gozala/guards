@@ -1,5 +1,9 @@
 # Changes #
 
+## 0.3.0 / 2011-07-02 ##
+
+  - Removed all external dependencies.
+
 ## 0.2.0 / 2011-06-10 ##
 
   - Implementing in functional style to reduce boilerplate.
