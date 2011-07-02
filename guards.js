@@ -6,13 +6,26 @@
 (typeof define !== "function" ? function($){ $(require, exports, module); } : define)(function(require, exports, module, undefined) {
 
 var core = require('./core.js')
-var checks = require('https!raw.github.com/Gozala/type/v0.0.1/checks.js')
-var isFunction = checks.isFunction
-var isNull = checks.isNull
-var isNumber = checks.isNumber
-var isString = checks.isString
-var isObject = checks.isObject
-var isBoolean = checks.isBoolean
+
+function isFunction(value) {
+    return typeof value === "function" && value.call && value.apply;
+}
+function isNull(value) {
+  return value === null;
+}
+function isNumber(value) {
+  return typeof value === "number";
+}
+function isString(value) {
+  return typeof value === "string";
+}
+function isObject(value) {
+    return typeof value === "object" && value !== null;
+}
+function isBoolean(value) {
+  return value === true || value === false;
+}
+
 
 exports.version = "0.2.0"
 var Guard = exports.Guard = core.Guard
@@ -165,6 +178,7 @@ exports.Boolean = function Number(defaultValue, message) {
   message = message || 'Boolean expected instead of {{type}} `{{value}}`'
   return Guard(isBoolean, defaultValue, message)
 }
+
 exports.Null = function Null(defaultValue, message) {
   message = message || 'Boolean expected instead of {{type}} `{{value}}`'
   return Guard(isNull, defaultValue, message)
